@@ -8,7 +8,7 @@ import markdown
 import magic
 
 from .model import db, Board, Thread, Res, Permission
-from .forms import CreateBoardForm, CreateThreadForm, SettingForm
+from .forms import CreateBoardForm, CreateThreadForm, SettingForm, UpdateThreadForm, UpdateBoardForm
 from .utils import hiroyuki
 
 class HomeController(Controller):
@@ -57,6 +57,16 @@ class BoardController(Controller):
         return Response.render(template, {
             "board": board,
             "boards": Board.list_subscribed(request.user)
+        })
+
+    def update(self, request):
+        board = Board.retrieve(request.params['board'])
+        form = UpdateBoardForm(request.post())
+        board.name = form['name']
+        board.update()
+        return Response.json({
+            "_id": board._id,
+            "name": board.name,
         })
 
     def subscribe(self, request):
@@ -115,6 +125,16 @@ class ThreadController(Controller):
             "board": board,
             "thread": thread,
             "boards": Board.list_subscribed(request.user)
+        })
+
+    def update(self, request):
+        thread = Thread.retrieve(request.params['thread'])
+        form = UpdateThreadForm(request.post())
+        thread.title = form['title']
+        thread.update()
+        return Response.json({
+            "_id": thread._id,
+            "title": thread.title,
         })
 
 class WebSocketController(Controller):

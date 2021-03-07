@@ -1,7 +1,7 @@
 from mitama.app import App, Router
 from mitama.utils.controllers import static_files
 from mitama.utils.middlewares import SessionMiddleware
-from mitama.app.method import view, post
+from mitama.app.method import view, post, put
 
 from .controller import HomeController, BoardController, ThreadController, WebSocketController, UserController
 from .model import Board, Thread, Res, Permission
@@ -19,9 +19,11 @@ class App(App):
             view("/<board>/<thread>", ThreadController, 'retrieve'),
             view("/user/<user>/icon", UserController, 'icon'),
             post("/api/v0/board", BoardController, 'create'),
+            put("/api/v0/board/<board>", BoardController, 'update'),
             post("/api/v0/board/<board>", ThreadController, 'create'),
             post("/api/v0/board/<board>/subscribe", BoardController, 'subscribe'),
             post("/api/v0/board/<board>/unsubscribe", BoardController, 'unsubscribe'),
+            put("/api/v0/board/<board>/<thread>", ThreadController, 'update'),
             view("/api/v0/board/<board>/<thread>/socket", WebSocketController),
         ],
         middlewares=[SessionMiddleware]

@@ -6,15 +6,15 @@ authors = ["boke0 <speken00.tt@gmail.com>"]
 license = "MIT"
 
 include = [
-    "izanami/templates/*.html",
-    "izanami/templates/**/*.html",
-    "izanami/static/*",
-    "izanami/static/**/*",
+    "kyokusui/templates/*.html",
+    "kyokusui/templates/**/*.html",
+    "kyokusui/static/*",
+    "kyokusui/static/**/*",
 ]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-mitama = "^4.5.4"
+mitama = "^4.5.8"
 
 [tool.poetry.dev-dependencies]
 unittest = "^0.0"

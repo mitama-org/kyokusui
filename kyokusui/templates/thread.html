@@ -5,8 +5,13 @@
     <div id='messages'>
         <header class='card mb-3'>
             <div class='card-body'>
-                <h2 class='card-title mb-4'>{{ thread.title }}</h2>
-                {{ lists.userItem(request.user, small=True) }}
+                <h2 id="title" class='card-title mb-4'>{{ thread.title }}</h2>
+                <div class='d-flex justify-content-between'>
+                    {{ lists.userItem(request.user, small=True) }}
+                    {% if thread.user == request.user %}
+                    <button class='btn bi bi-gear-fill' onclick='edit()'></button>
+                    {% endif %}
+                </div>
                 <div class='card-text d-flex justify-content-end'><small class='text-muted'>{{ thread.created.strftime('%Y-%m-%d %H:%M:%S') }}</small></div>
             </div>
         </header>
@@ -80,6 +85,7 @@
     <script>
 var counter = {{ thread.res|length }}
 var images = []
+const title = document.querySelector("#title")
 const textarea = document.querySelector("#message")
 const image_form = document.querySelector("#image")
 const image2send = document.querySelector("#image2send")
@@ -176,6 +182,24 @@ function close_thread() {
     ws.close()
     const form = document.querySelector("#message_form");
     form.parentNode.removeChild(form)
+}
+function edit() {
+    const input = document.createElement("input")
+    input.classList.add("form-control")
+    input.value = title.innerHTML
+    input.onblur = () => {
+        const form = new FormData()
+        form.append("title", input.value)
+        fetch("{{ url("/api/v0/board/" + board._id + "/" + thread._id) }}", {
+            method: "PUT",
+            credentials: "include",
+            body: form
+        }).then(res => res.json()).then(res => {
+            title.innerHTML = res.title
+        })
+    }
+    title.innerHTML = "";
+    title.append(input)
 }
     </script>
 </div>

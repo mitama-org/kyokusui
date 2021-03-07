@@ -3,12 +3,15 @@
 {% include "components/thread_form.html" %}
 <div class='container'>
     <div class='d-flex justify-content-between'>
-        <h2>{{ board.name }}</h2>
+        <h2 id='title'>{{ board.name }}</h2>
         <div>
             {% if request.user in board.subscribers %}
             <button class='btn bi bi-bookmark-plus-fill text-primary' onclick='unsubscribe()'></button>
             {% else %}
             <button class='btn bi bi-bookmark-plus-fill' onclick='subscribe()'></button>
+            {% endif %}
+            {% if board.owner.object == request.user or board.owner.object in request.user.groups %}
+            <button class='btn bi bi-gear-fill' onclick='edit()'></button>
             {% endif %}
             <button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#thread_form'>スレッドを立てる</button>
         </div>
@@ -42,6 +45,24 @@
             }).then(res => res.json()).then(res => {
                 location.reload()
             })
+        }
+        function edit() {
+            const input = document.createElement("input")
+            input.classList.add("form-control")
+            input.value = title.innerHTML
+            input.onblur = () => {
+                const form = new FormData()
+                form.append("name", input.value)
+                fetch("{{ url("/api/v0/board/" + board._id) }}", {
+                    method: "PUT",
+                    credentials: "include",
+                    body: form
+                }).then(res => res.json()).then(res => {
+                    title.innerHTML = res.name
+                })
+            }
+            title.innerHTML = "";
+            title.append(input)
         }
     </script>
 </div>

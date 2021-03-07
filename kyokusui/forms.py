@@ -10,3 +10,9 @@ class CreateThreadForm(Form):
 
 class SettingForm(Form):
     permissions = DictField(label="権限", listed=True)
+
+class UpdateThreadForm(Form):
+    title = Field(label="タイトル", required=True)
+
+class UpdateBoardForm(Form):
+    name = Field(label="タイトル", required=True)
