@@ -5,7 +5,7 @@
     <div id='messages'>
         <header class='card mb-3'>
             <div class='card-body'>
-                <h2 class='card-title'>{{ thread.title }}</h2>
+                <h2 class='card-title mb-4'>{{ thread.title }}</h2>
                 {{ lists.userItem(request.user, small=True) }}
                 <div class='card-text d-flex justify-content-end'><small class='text-muted'>{{ thread.created.strftime('%Y-%m-%d %H:%M:%S') }}</small></div>
             </div>
@@ -13,12 +13,12 @@
         {% for res in thread.res|sort(attribute='datetime') %}
         <div class='card mb-3' id="{{loop.index}}">
             <div class='card-body'>
-                <div class='d-flex justify-content-between'>
-                    <div class='card-title d-flex align-items-center'>
-                        <div class='me-2'><strong>#{{loop.index}}</strong></div>
-                        {{ lists.userItem(res.user, small=True) }}
-                    </div>
+                <div class='mb-2 d-flex justify-content-between'>
+                    <span class='badge bg-secondary'>#{{loop.index}}</span>
                     <div class='card-text'><small class='text-muted'>{{ res.datetime.strftime('%Y-%m-%d %H:%M:%S') }}</small></div>
+                </div>
+                <div class='mb-3'>
+                    {{ lists.userItem(res.user, small=True) }}
                 </div>
                 {{ res.parsed_data.message|hiroyuki|markdown }}
                 <div class='image-list'>

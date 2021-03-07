@@ -77,7 +77,7 @@
 </nav>
 <div class='container-fluid' style='height:calc(100vh - 56px)'>
     <div class='row'>
-        <nav class='sidebar col-md-3 mt-4'>
+        <nav class='sidebar col-md-3 col-lg-2 mt-4'>
             {% if permission('create_board', request.user) %}
             <button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#board_form'>板を立てる</button>
             {% endif %}
