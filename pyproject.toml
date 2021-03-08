@@ -14,7 +14,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
-mitama = "^4.5.8"
+mitama = "^4.5.12"
 
 [tool.poetry.dev-dependencies]
 unittest = "^0.0"

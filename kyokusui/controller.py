@@ -1,15 +1,21 @@
 from mitama.app import Controller
 from mitama.app.http import Response
 from mitama.models import User, Node, Role, is_admin
-from datetime import datetime
 import json
 import re
 import markdown
 import magic
 
 from .model import db, Board, Thread, Res, Permission
-from .forms import CreateBoardForm, CreateThreadForm, SettingForm, UpdateThreadForm, UpdateBoardForm
+from .forms import (
+    CreateBoardForm,
+    CreateThreadForm,
+    SettingForm,
+    UpdateThreadForm,
+    UpdateBoardForm
+)
 from .utils import hiroyuki
+
 
 class HomeController(Controller):
     def handle(self, request):
@@ -24,14 +30,17 @@ class HomeController(Controller):
             "threads": threads,
             "boards": Board.list_subscribed(request.user)
         })
+
     def settings(self, request):
         template = self.view.get_template("settings.html")
         error = ""
         if request.method == "POST":
             form = SettingForm(request.post())
-            for permission_screen_name, permission_roles in form['permissions'].items():
-                permission = Permission.retrieve(screen_name = permission_screen_name)
-                permission.roles = [Role.retrieve(screen_name = r) for r in permission_roles]
+            for screen_name, roles in form['permissions'].items():
+                permission = Permission.retrieve(screen_name=screen_name)
+                permission.roles = [
+                    Role.retrieve(screen_name=r) for r in roles
+                ]
             permission.update()
             error = "保存しました"
         return Response.render(template, {
@@ -39,6 +48,7 @@ class HomeController(Controller):
             "roles": Role.list(),
             "error": error
         })
+
 
 class BoardController(Controller):
     def create(self, request):
@@ -91,12 +101,14 @@ class BoardController(Controller):
             }
         })
 
+
 class UserController(Controller):
     def icon(self, request):
         user = User.retrieve(request.params['user'])
         f = magic.Magic(mime=True, uncompress=True)
         mime = f.from_buffer(self.icon)
         return Response(user._icon, content_type=mime)
+
 
 class ThreadController(Controller):
     def create(self, request):
@@ -109,9 +121,12 @@ class ThreadController(Controller):
         thread.create()
         for user in board.subscribers:
             user.push({
-                "title": res.thread.title + " - Kyokusui",
+                "title": thread.title + " - Kyokusui",
                 "body": "スレッドが立ちました",
-                "icon": self.app.convert_fullurl(request, "/user/{}/icon".format(requst.user._id))
+                "icon": self.app.convert_fullurl(
+                    request,
+                    "/user/{}/icon".format(request.user._id)
+                )
             })
         return Response.json({
             "_id": thread._id,
@@ -137,8 +152,10 @@ class ThreadController(Controller):
             "title": thread.title,
         })
 
+
 class WebSocketController(Controller):
     streams = {}
+
     def handle(self, request):
         ws = request.websocket
         board = Board.retrieve(request.params['board'])
@@ -162,14 +179,22 @@ class WebSocketController(Controller):
                     res.user = request.user
                     res.thread = Thread.retrieve(request.params['thread'])
                     res.create()
-                    mentions = re.findall(r"\>\>([0-9a-zA-Z.-_]+)", data['data']['message'])
+                    mentions = re.findall(
+                        r"\>\>([0-9a-zA-Z.-_]+)",
+                        data['data']['message']
+                    )
                     for mention in mentions:
                         try:
-                            user = User.retrieve(screen_name = mention)
+                            user = User.retrieve(
+                                screen_name=mention
+                            )
                             user.push({
                                 "title": res.thread.title + " - Kyokusui",
                                 "body": res.user.name+"さんがメンションしました",
-                                "icon": self.app.convert_fullurl(request, "/user/{}/icon".format(res.user._id))
+                                "icon": self.app.convert_fullurl(
+                                    request,
+                                    "/user/{}/icon".format(res.user._id)
+                                )
                             })
                         except Exception as err:
                             print(err, mention)
@@ -181,7 +206,10 @@ class WebSocketController(Controller):
                                 "type": "message",
                                 "_id": res._id,
                                 "data": {
-                                    "message": markdown.markdown(hiroyuki(res.parsed_data["message"]), extensions=['fenced_code']),
+                                    "message": markdown.markdown(
+                                        hiroyuki(res.parsed_data["message"]),
+                                        extensions=['fenced_code']
+                                    ),
                                     "images": res.parsed_data["images"]
                                 },
                                 "user": {
@@ -189,7 +217,9 @@ class WebSocketController(Controller):
                                     "name": res.user.name,
                                     "screen_name": res.user.screen_name
                                 },
-                                "datetime": res.datetime.strftime("%Y-%m-%d %H:%M:%S"),
+                                "datetime": res.datetime.strftime(
+                                    "%Y-%m-%d %H:%M:%S"
+                                ),
                                 "thread": thread._id,
                             }))
                         except Exception as err:

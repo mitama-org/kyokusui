@@ -1,7 +1,7 @@
 from mitama.db import BaseDatabase, Table, relationship
 from mitama.db.model import UUID
-from mitama.db.types import *
-from mitama.models import User, Group, Node, permission
+from mitama.db.types import Column, String, ForeignKey, DateTime, Boolean, Text
+from mitama.models import User, Node, permission
 from datetime import datetime
 import json
 
@@ -11,6 +11,7 @@ class Database(BaseDatabase):
 
 
 db = Database(prefix="kyokusui")
+
 
 class Board(db.Model):
     name = Column(String(255))
@@ -24,9 +25,14 @@ class Board(db.Model):
         boards_ = cls.list()
         boards = list()
         for board in boards_:
-            if board.owner.object == user or (isinstance(board.owner.object, Group) and board.owner.object.is_in(user)) or user in board.subscribers:
+            if (
+                board.owner.object == user or
+                board.owner.is_in(user) or
+                user in board.subscribers
+            ):
                 boards.append(board)
         return boards
+
 
 class Thread(db.Model):
     board_id = Column(String(64), ForeignKey("kyokusui_board._id"))
@@ -41,6 +47,7 @@ class Thread(db.Model):
         self.closed = True
         self.update()
 
+
 class Res(db.Model):
     thread_id = Column(String(64), ForeignKey("kyokusui_thread._id"))
     thread = relationship(Thread, backref="res")
@@ -53,12 +60,23 @@ class Res(db.Model):
     def parsed_data(self):
         return json.loads(self.data)
 
-subscribe_table = Table("kyokusui_subscribe",
+
+subscribe_table = Table(
+    "kyokusui_subscribe",
     db.metadata,
     Column("_id", String(64), default=UUID(), primary_key=True),
-    Column("user_id", String(64), ForeignKey("mitama_user._id", ondelete="CASCADE")),
-    Column("board_id", String(64), ForeignKey("kyokusui_board._id", ondelete="CASCADE"))
+    Column(
+        "user_id",
+        String(64),
+        ForeignKey("mitama_user._id", ondelete="CASCADE")
+    ),
+    Column(
+        "board_id",
+        String(64),
+        ForeignKey("kyokusui_board._id", ondelete="CASCADE")
+    )
 )
+
 
 class Subscribe(db.Model):
     __table__ = subscribe_table
@@ -66,6 +84,7 @@ class Subscribe(db.Model):
     board_id = subscribe_table.c.board_id,
     user = relationship(User)
     board = relationship(Board)
+
 
 Permission = permission(db, [
     {
