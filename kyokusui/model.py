@@ -46,6 +46,10 @@ class Thread(db.Model):
     def close(self):
         self.closed = True
         self.update()
+        self.event["close"]()
+
+
+Thread.listen("close")
 
 
 class Res(db.Model):
