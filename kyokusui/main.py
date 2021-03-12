@@ -7,6 +7,7 @@ from .controller import HomeController, BoardController, ThreadController, WebSo
 from .model import Board, Thread, Res, Permission
 from .utils import hiroyuki
 
+
 class App(App):
     name = 'Kyokusui'
     description = '業務用便所の落書き'
