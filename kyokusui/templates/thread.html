@@ -16,8 +16,8 @@
             </div>
         </header>
         {% for res in thread.res|sort(attribute='datetime') %}
-        <div class='card mb-3' id="{{loop.index}}">
-            <div class='card-body'>
+        <div class='card mb-3' id="res-{{res._id}}">
+            <div class='card-body' id="{{ loop.index }}">
                 <div class='mb-2 d-flex justify-content-between'>
                     <span class='badge bg-secondary'>#{{loop.index}}</span>
                     <div class='card-text'><small class='text-muted'>{{ res.datetime.strftime('%Y-%m-%d %H:%M:%S') }}</small></div>
@@ -129,8 +129,9 @@ ws.onmessage = e => {
                 const mesbox = document.createElement("div");
                 mesbox.classList.add("card")
                 mesbox.classList.add("mb-3")
+                mesbox.id = `res-${received._id}`
                 mesbox.innerHTML = `
-                    <div class='card-body'>
+                   <div class='card-body' id='${counter}'>
                         <div class='mb-2 d-flex justify-content-between'>
                             <span class='badge bg-secondary'>#${counter}</span>
                             <div class='card-text'><small class='text-muted'>${received.datetime}</small></div>
