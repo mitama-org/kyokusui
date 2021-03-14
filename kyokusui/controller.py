@@ -142,6 +142,16 @@ class ThreadController(Controller):
             "boards": Board.list_subscribed(request.user)
         })
 
+    def log(self, request):
+        template = self.view.get_template("log.html")
+        board = Board.retrieve(request.params['board'])
+        thread = Thread.retrieve(request.params['thread'])
+        return Response.render(template, {
+            "board": board,
+            "thread": thread,
+            "boards": Board.list_subscribed(request.user)
+        })
+
     def update(self, request):
         thread = Thread.retrieve(request.params['thread'])
         form = UpdateThreadForm(request.post())
@@ -214,6 +224,7 @@ class WebSocketController(Controller):
                                 },
                                 "user": {
                                     "_id": res.user._id,
+                                    "icon": res.user.icon_to_dataurl(),
                                     "name": res.user.name,
                                     "screen_name": res.user.screen_name
                                 },

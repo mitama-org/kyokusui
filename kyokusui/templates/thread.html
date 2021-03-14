@@ -131,11 +131,18 @@ ws.onmessage = e => {
                 mesbox.classList.add("mb-3")
                 mesbox.innerHTML = `
                     <div class='card-body'>
-                        <div class='d-flex justify-content-between'>
-                            <div class='card-title d-flex align-items-center'>
-                                <div class='me-2'><strong>#${counter}</strong></div>
-                            </div>
+                        <div class='mb-2 d-flex justify-content-between'>
+                            <span class='badge bg-secondary'>#${counter}</span>
                             <div class='card-text'><small class='text-muted'>${received.datetime}</small></div>
+                        </div>
+                        <div class='mb-3'>
+                            <div class="user-item small">
+                                <img src='${received.user.icon}' class='icon' />
+                                <div class='detail'>
+                                    <div class='name'>${received.user.name}</div>
+                                    <div class='screen-name'>${received.user.screen_name}</div>
+                                </div>
+                            </div>
                         </div>
                         ${data.message}
                         <div class='image-list'>` + (Array.from(data.images ? data.images : []).map((image, i) => `

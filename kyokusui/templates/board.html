@@ -16,6 +16,11 @@
             <button class='btn btn-primary' data-bs-toggle='modal' data-bs-target='#thread_form'>スレッドを立てる</button>
         </div>
     </div>
+    <!--
+    <div class='mt-3 mb-3 d-flex justify-content-end'>
+        <a href='{{ url('/' + board._id + '/logs') }}'>過去ログ</a>
+    </div>
+    -->
     <div class='list-group mt-4'>
         {% for thread in board.threads|selectattr('closed', 'false') %}
         <a href='{{ url('/' + board._id + '/' + thread._id) }}' class='list-group-item list-group-item-action'>

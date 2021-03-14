@@ -17,6 +17,8 @@ class App(App):
             view("/settings", HomeController, 'settings'),
             view("/static/<path:path>", static_files()),
             view("/<board>", BoardController, 'retrieve'),
+            view("/<board>/logs", BoardController, 'logs'),
+            view("/<board>/logs/<thread>", ThreadController, 'log'),
             view("/<board>/<thread>", ThreadController, 'retrieve'),
             view("/user/<user>/icon", UserController, 'icon'),
             post("/api/v0/board", BoardController, 'create'),
