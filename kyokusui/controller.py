@@ -139,7 +139,8 @@ class ThreadController(Controller):
         return Response.render(template, {
             "board": board,
             "thread": thread,
-            "boards": Board.list_subscribed(request.user)
+            "boards": Board.list_subscribed(request.user),
+            "ws_scheme": "ws" if request.scheme == "http" else "wss"
         })
 
     def log(self, request):
